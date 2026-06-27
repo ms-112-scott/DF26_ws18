@@ -1,6 +1,6 @@
 # Python 基礎與機器學習教學課程
 
-一套以繁體中文撰寫、完全自足的教學教材，涵蓋 Python 基礎、機器學習，以及整合範例。所有教學筆記本都遵循統一的撰寫與註解規範（見 [`註解原則.md`](註解原則.md)）。
+一套以繁體中文撰寫、完全自足的教學教材，涵蓋 Python 基礎、機器學習，以及整合範例。
 
 ## 專案結構
 
@@ -9,7 +9,6 @@ python_basics_course/
 ├── 00_workflow/            整合範例：用真實資料把多概念串成完整流程
 ├── 01_py基礎教學/          Python 基礎主課程（12 本 notebook）
 ├── 02_機器學習教學/        機器學習進階軌（13 本 notebook）
-├── 註解原則.md             所有教材共用的撰寫 / 註解規範
 ├── requirements.txt        Python 套件鎖定清單（pip freeze）
 └── README.md               本檔
 ```
@@ -83,7 +82,3 @@ pip install -r requirements.txt
 主要套件：numpy、pandas、matplotlib、scipy、scikit-learn、torch / torchvision、shapely、geopandas、osmnx、networkx、requests、pillow、jupyter。
 
 用 JupyterLab / Jupyter Notebook 或 VS Code 開啟 `.ipynb` 即可逐格執行。
-
-## 撰寫規範
-
-所有教學 notebook 共用 [`註解原則.md`](註解原則.md) 的規範：固定骨架（學習目標 → 概念交替 → 練習 → 小結）、五種純文字註解標記、每概念首見才註、範例自造資料且有輸出、術語首見附英文、無 emoji。
