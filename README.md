@@ -1,21 +1,20 @@
-# Python 基礎與資料 / 機器學習教學課程
+# Python 基礎與機器學習教學課程
 
-一套以繁體中文撰寫、完全自足的教學教材，涵蓋 Python 基礎、機器學習、p5.js 資料視覺化，以及整合範例。所有教學筆記本與子專案都遵循統一的撰寫與註解規範（見 [`註解原則.md`](註解原則.md)）。
+一套以繁體中文撰寫、完全自足的教學教材，涵蓋 Python 基礎、機器學習，以及整合範例。所有教學筆記本都遵循統一的撰寫與註解規範（見 [`註解原則.md`](註解原則.md)）。
 
 ## 專案結構
 
 ```
 python_basics_course/
 ├── 00_workflow/            整合範例：用真實資料把多概念串成完整流程
-├── 01_p5 js 教學/          p5.js 資料視覺化軌（JavaScript，瀏覽器執行）
-├── 02_py基礎教學/          Python 基礎主課程（12 本 notebook）
-├── 03_機器學習教學/        機器學習進階軌（13 本 notebook）
+├── 01_py基礎教學/          Python 基礎主課程（12 本 notebook）
+├── 02_機器學習教學/        機器學習進階軌（13 本 notebook）
 ├── 註解原則.md             所有教材共用的撰寫 / 註解規範
 ├── requirements.txt        Python 套件鎖定清單（pip freeze）
 └── README.md               本檔
 ```
 
-學習建議順序：先學 `02_py基礎教學` 打底，再進 `03_機器學習教學`；`01_p5 js 教學` 為獨立軌可隨時進行；`00_workflow` 是把多概念整合的示範，適合學完基礎後回顧。
+學習建議順序：先學 `01_py基礎教學` 打底，再進 `02_機器學習教學`；`00_workflow` 是把多概念整合的示範，適合學完基礎後回顧。
 
 ---
 
@@ -33,29 +32,7 @@ python_basics_course/
 
 ---
 
-## 01_p5 js 教學 — p5.js 資料視覺化
-
-p5.js（Processing 的 JavaScript 版創意程式環境 creative coding）資料視覺化軌，在瀏覽器執行，**不需 Python 環境**。依「畫布基礎 → 互動 → 資料結構 → 載入資料 → 映射 → 圖表 → 進階」循序拆成 7 個可獨立執行的子專案，每個資料夾含 `index.html` + `sketch.js` + `README.md`。
-
-| 子專案 | 主題 |
-|---|---|
-| `p01_canvas_basics` | 畫布座標系 + 基本圖形（point / line / rect / ellipse） |
-| `p02_variables_interaction` | 變數 + setup()／draw() 迴圈 + 滑鼠 / 鍵盤互動 |
-| `p03_arrays_objects` | 陣列 array 與物件 object（一筆資料 = 一個物件） |
-| `p04_load_data` | `loadTable()` / `loadJSON()` 在 `preload()` 載入外部資料（附 `buildings.csv`） |
-| `p05_map_mapping` | `map()` 把數值映射成位置 / 大小 / 顏色 |
-| `p06_first_charts` | 長條圖 → 散點圖 → 互動 tooltip |
-| `p07_advanced` | 動畫過場 lerp / 聲音 FFT 頻譜 / 地理資料 |
-
-執行方式：
-- 直接用瀏覽器開啟子專案內的 `index.html`（首次需連網載入 p5.js CDN）。
-- 涉及載入本地檔（`p04`）或音訊（`p07`）的子專案，因瀏覽器 CORS 限制，請改用本地伺服器：在子專案資料夾執行 `python -m http.server 8000`，再開 `http://localhost:8000`；或上傳到 [p5.js Web Editor](https://editor.p5js.org/)。
-
-外部資源整理見 [`01_p5 js 教學/資源收集_p5js資料視覺化.md`](01_p5%20js%20教學/資源收集_p5js資料視覺化.md)。
-
----
-
-## 02_py基礎教學 — Python 基礎主課程
+## 01_py基礎教學 — Python 基礎主課程
 
 12 本 notebook，由語法 → 科學運算 → 製圖 → 領域庫，逐步推進。
 
@@ -70,7 +47,7 @@ p5.js（Processing 的 JavaScript 版創意程式環境 creative coding）資料
 
 ---
 
-## 03_機器學習教學 — 機器學習進階軌
+## 02_機器學習教學 — 機器學習進階軌
 
 13 本 notebook（ML00–ML12），從機器學習總覽到生成模型。
 
@@ -86,9 +63,9 @@ p5.js（Processing 的 JavaScript 版創意程式環境 creative coding）資料
 
 ---
 
-## 環境設定（Python 軌）
+## 環境設定
 
-`02_py基礎教學` 與 `03_機器學習教學` 的 notebook 需要 Python 環境與套件。
+所有 notebook 需要 Python 環境與套件。
 
 ```bash
 # 建立虛擬環境
