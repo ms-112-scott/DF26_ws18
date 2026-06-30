@@ -189,6 +189,22 @@ python -m pip install --upgrade pip
 pip install -r requirements.txt
 ```
 
+> **在中國大陸 / 連 `pypi.org` 逾時（`Read timed out`、`Retrying (Retry(total=4...))`）？**
+> 那是預設的官方源連不上，不是程式問題。改用國內鏡像源即可（加 `-i`）：
+>
+> ```cmd
+> python -m pip install --upgrade pip -i https://pypi.tuna.tsinghua.edu.cn/simple
+> pip install -r requirements.txt -i https://pypi.tuna.tsinghua.edu.cn/simple
+> ```
+>
+> 想一勞永逸（之後所有 pip 都走鏡像，不必每次打 `-i`）：
+>
+> ```cmd
+> pip config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simple
+> ```
+>
+> 其他可替換鏡像：阿里 `https://mirrors.aliyun.com/pypi/simple`、騰訊 `https://mirrors.cloud.tencent.com/pypi/simple`。
+
 主要套件：numpy、pandas、matplotlib、scipy、scikit-learn、torch / torchvision、shapely、geopandas、osmnx、networkx、requests、pillow、jupyter。
 
 ### 步驟 4：驗證安裝（lib check）
@@ -411,6 +427,22 @@ python -m pip install --upgrade pip
 # 安装锁定清单
 pip install -r requirements.txt
 ```
+
+> **在中国大陆 / 连 `pypi.org` 超时（`Read timed out`、`Retrying (Retry(total=4...))`）？**
+> 那是默认的官方源连不上，不是程序问题。改用国内镜像源即可（加 `-i`）：
+>
+> ```cmd
+> python -m pip install --upgrade pip -i https://pypi.tuna.tsinghua.edu.cn/simple
+> pip install -r requirements.txt -i https://pypi.tuna.tsinghua.edu.cn/simple
+> ```
+>
+> 想一劳永逸（之后所有 pip 都走镜像，不必每次打 `-i`）：
+>
+> ```cmd
+> pip config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simple
+> ```
+>
+> 其他可替换镜像：阿里 `https://mirrors.aliyun.com/pypi/simple`、腾讯 `https://mirrors.cloud.tencent.com/pypi/simple`。
 
 主要软件包：numpy、pandas、matplotlib、scipy、scikit-learn、torch / torchvision、shapely、geopandas、osmnx、networkx、requests、pillow、jupyter。
 
