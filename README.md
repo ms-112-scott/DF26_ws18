@@ -74,6 +74,42 @@ python_basics_course/
 
 從零開始的完整步驟。所有 notebook 需要 Python 環境與套件。
 
+> **懶人包：一鍵建立虛擬環境。** 不想手動敲指令，可直接雙擊專案根目錄的一鍵更新檔：
+>
+> - **Windows：** `一鍵虛擬環境更新.bat`
+> - **macOS：** `一鍵虛擬環境更新.command`（第一次若無法執行，右鍵 →「打開」，
+>   或先 `chmod +x "一鍵虛擬環境更新.command"`）
+>
+> 它會自動完成下列「步驟 1～3」：檢查 / 安裝 Python 3.14（macOS 用 Homebrew、
+> Windows 用 winget）、建立或重建 `.venv`、再依 `requirements.txt` 安裝套件
+> （Windows-only 的 `pywinpty` 在 macOS 會自動略過）。`requirements.txt` 更新後，
+> 再雙擊一次即可同步。想了解每一步在做什麼，仍可往下看手動步驟。
+
+> **⚠️ macOS 雙擊時出現「Apple 無法驗證……是否含有惡意軟體」而打不開？**
+> 這不是檔案有問題。只要檔案是經由 **WeChat / AirDrop / Email / 下載 ZIP** 取得，
+> macOS 的 Gatekeeper 就會一律封鎖，與內容無關。**解除一次即可**（兩個 `.command` 一起處理）：
+>
+> **最簡單：** 打開專案裡的 **`Mac_貼到Terminal執行.txt`**，照裡面說明把對應指令整段複製、
+> 貼到「終端機」按 Enter——它會自動找到資料夾、解除封鎖並完成安裝（貼上的指令不受 Gatekeeper 限制）。
+>
+> 想自己手動解除也可以：
+>
+> 1. 打開「**終端機 / Terminal**」（在「啟動台」或 Spotlight 搜尋 `Terminal`）。
+> 2. 輸入這行，**結尾留一個空格**（先別按 Enter）：
+>
+>    ```bash
+>    xattr -dr com.apple.quarantine 
+>    ```
+>
+> 3. 把**整個專案資料夾**從 Finder **拖進終端機視窗**（會自動補上路徑），再按 **Enter**。
+> 4. 之後回到 Finder 雙擊 `.command` 就能正常執行。
+>
+> 若雙擊仍說「沒有執行權限」，多半是 ZIP 解壓掉了權限，於同個終端機再執行一次：
+> `chmod +x *.command`。
+>
+> **想一勞永逸？** 改用 `git clone` 取得專案（見下方步驟 0 的方法 A）——這樣拿到的檔案
+> 不會被標記，雙擊即可執行，之後 `git pull` 下載的更新也都是乾淨的。
+
 ### 步驟 0：取得專案
 
 二選一：
@@ -85,9 +121,14 @@ git clone https://github.com/ms-112-scott/DF26_ws18.git
 cd DF26_ws18
 ```
 
-> **還沒裝 Git？不用先裝。** 直接雙擊專案根目錄的 `一鍵git更新.bat` 即可——
-> 它會自動判斷：沒有 Git 就先幫你純 cmd 安裝（優先用 Windows 內建的 winget），
-> 裝好再接著把教材更新到最新版；已經有 Git 就直接更新。
+> **還沒裝 Git？不用先裝。**
+>
+> - **Windows：** 直接雙擊專案根目錄的 `一鍵git更新.bat`——它會自動判斷：沒有 Git
+>   就先幫你純 cmd 安裝（優先用 Windows 內建的 winget），裝好再接著把教材更新到最新版；
+>   已經有 Git 就直接更新。
+> - **macOS：** 雙擊 `一鍵git更新.command`（功能相同；沒有 Git 會用 Homebrew 自動安裝，
+>   需要時會請你輸入一次 Mac 密碼）。第一次若 Finder 不讓執行，**對著檔案按右鍵 →「打開」**，
+>   或先在終端機執行 `chmod +x "一鍵git更新.command"`。
 >
 > 想自己手動裝也行，開 cmd 一行搞定：
 >
@@ -107,9 +148,12 @@ cd DF26_ws18-master
 ```
 
 > **已經用 ZIP 下載、想之後能 `git pull`？** ZIP 解壓的資料夾沒有連到 Git，
-> 需要先「接上 remote」一次。最簡單：直接雙擊資料夾裡的 `一鍵git更新.bat`——
+> 需要先「接上 remote」一次。最簡單：直接雙擊資料夾裡的一鍵更新檔——
+> **Windows 用 `一鍵git更新.bat`、macOS 用 `一鍵git更新.command`**——
 > 它會自動判斷，發現還沒接上就幫你初始化並連到老師的倉庫，然後更新到最新版；
 > 你改過的檔會先備份成 `name-1.ext`，之後每次雙擊就能更新。
+> （macOS 從 ZIP 解壓的 `.command` 可能沒有執行權限，第一次請右鍵 →「打開」，
+> 或先 `chmod +x "一鍵git更新.command"`。）
 >
 > 想自己手動接（在解壓後的資料夾裡開 cmd）：
 >
@@ -297,6 +341,42 @@ python_basics_course/
 
 从零开始的完整步骤。所有 notebook 需要 Python 环境与软件包。
 
+> **懒人包：一键创建虚拟环境。** 不想手动敲指令，可直接双击项目根目录的一键更新文件：
+>
+> - **Windows：** `一鍵虛擬環境更新.bat`
+> - **macOS：** `一鍵虛擬環境更新.command`（第一次若无法运行，右键 →「打开」，
+>   或先 `chmod +x "一鍵虛擬環境更新.command"`）
+>
+> 它会自动完成下列「步骤 1～3」：检查 / 安装 Python 3.14（macOS 用 Homebrew、
+> Windows 用 winget）、创建或重建 `.venv`、再按 `requirements.txt` 安装软件包
+> （Windows-only 的 `pywinpty` 在 macOS 会自动跳过）。`requirements.txt` 更新后，
+> 再双击一次即可同步。想了解每一步在做什么，仍可往下看手动步骤。
+
+> **⚠️ macOS 双击时出现「Apple 无法验证……是否含有恶意软件」而打不开？**
+> 这不是文件有问题。只要文件是经由 **WeChat / AirDrop / Email / 下载 ZIP** 获取，
+> macOS 的 Gatekeeper 就会一律拦截，与内容无关。**解除一次即可**（两个 `.command` 一起处理）：
+>
+> **最简单：** 打开项目里的 **`Mac_貼到Terminal執行.txt`**，照里面说明把对应命令整段复制、
+> 粘贴到「终端」按 Enter——它会自动找到文件夹、解除拦截并完成安装（粘贴的命令不受 Gatekeeper 限制）。
+>
+> 想自己手动解除也可以：
+>
+> 1. 打开「**终端 / Terminal**」（在「启动台」或 Spotlight 搜索 `Terminal`）。
+> 2. 输入这行，**结尾留一个空格**（先别按 Enter）：
+>
+>    ```bash
+>    xattr -dr com.apple.quarantine 
+>    ```
+>
+> 3. 把**整个项目文件夹**从 Finder **拖进终端窗口**（会自动补上路径），再按 **Enter**。
+> 4. 之后回到 Finder 双击 `.command` 就能正常运行。
+>
+> 若双击仍说「没有执行权限」，多半是 ZIP 解压掉了权限，在同一个终端再执行一次：
+> `chmod +x *.command`。
+>
+> **想一劳永逸？** 改用 `git clone` 获取项目（见下方步骤 0 的方法 A）——这样拿到的文件
+> 不会被标记，双击即可运行，之后 `git pull` 下载的更新也都是干净的。
+
 ### 步骤 0：获取项目
 
 二选一：
@@ -308,9 +388,14 @@ git clone https://github.com/ms-112-scott/DF26_ws18.git
 cd DF26_ws18
 ```
 
-> **还没装 Git？不用先装。** 直接双击项目根目录的 `一鍵git更新.bat` 即可——
-> 它会自动判断：没有 Git 就先帮你纯 cmd 安装（优先用 Windows 内置的 winget），
-> 装好再接着把教材更新到最新版；已经有 Git 就直接更新。
+> **还没装 Git？不用先装。**
+>
+> - **Windows：** 直接双击项目根目录的 `一鍵git更新.bat`——它会自动判断：没有 Git
+>   就先帮你纯 cmd 安装（优先用 Windows 内置的 winget），装好再接着把教材更新到最新版；
+>   已经有 Git 就直接更新。
+> - **macOS：** 双击 `一鍵git更新.command`（功能相同；没有 Git 会用 Homebrew 自动安装，
+>   需要时会请你输入一次 Mac 密码）。第一次若 Finder 不让运行，**对着文件按右键 →「打开」**，
+>   或先在终端运行 `chmod +x "一鍵git更新.command"`。
 >
 > 想自己手动装也行，开 cmd 一行搞定：
 >
@@ -330,9 +415,12 @@ cd DF26_ws18-master
 ```
 
 > **已经用 ZIP 下载、想之后能 `git pull`？** ZIP 解压的文件夹没有连到 Git，
-> 需要先「接上 remote」一次。最简单：直接双击文件夹里的 `一鍵git更新.bat`——
+> 需要先「接上 remote」一次。最简单：直接双击文件夹里的一键更新文件——
+> **Windows 用 `一鍵git更新.bat`、macOS 用 `一鍵git更新.command`**——
 > 它会自动判断，发现还没接上就帮你初始化并连到老师的仓库，然后更新到最新版；
 > 你改过的文件会先备份成 `name-1.ext`，之后每次双击就能更新。
+> （macOS 从 ZIP 解压的 `.command` 可能没有执行权限，第一次请右键 →「打开」，
+> 或先 `chmod +x "一鍵git更新.command"`。）
 >
 > 想自己手动接（在解压后的文件夹里开 cmd）：
 >
