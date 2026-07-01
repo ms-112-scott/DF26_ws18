@@ -2,6 +2,8 @@
   city_3d(sub)        — matplotlib,程式码定角度(elev/azim)。
   city_3d_plotly(sub) — plotly,浏览器里滑鼠拖动旋转(回传 fig,自行 .show()/.write_html())。
 sub 需有 'stakeholder' 与高度栏(预设 'height_m';可传 height_col 指定情景高度)。"""
+import inspect
+import numpy as np
 import matplotlib.pyplot as plt
 import common
 from . import _base
@@ -10,16 +12,24 @@ from . import _base
 def city_3d(sub, height_col="height_m", elev=30, azim=-60, top=None, show=True):
     """top 不为 None 时,只取占地最大的 top 栋画预览(几千栋时 matplotlib 才不卡)。"""
     from mpl_toolkits.mplot3d.art3d import Poly3DCollection
+    sub = sub[np.isfinite(sub[height_col].astype(float))]     # 丢掉高度 NaN/Inf 的楼
     if top is not None and len(sub) > top:
         sub = sub.sort_values("area_m2", ascending=False).head(top)
     ox, oy = _base.origin_of(sub)
 
     fig = plt.figure(figsize=(11, 7.5))
     ax = fig.add_subplot(111, projection="3d")
+    # 新版 mpl(3.9+):add_collection3d 每次都急着 autoscale,边界一旦出现 NaN/Inf 就
+    # ValueError: Axis limits cannot be NaN or Inf。传 autolim=False 关掉,改用下方显式 set_*lim。
+    no_autolim = "autolim" in inspect.signature(ax.add_collection3d).parameters
     for _, r in sub.iterrows():
         faces = _base.building_faces(r["geom"], float(r[height_col]), ox, oy)
-        ax.add_collection3d(Poly3DCollection(faces, facecolor=_base.SH_COLOR[r["stakeholder"]],
-                                             edgecolor="white", linewidths=0.1, alpha=0.92))
+        pts = [c for f in faces for c in f]
+        if not pts or not np.isfinite(np.asarray(pts, dtype=float)).all():
+            continue                                          # 跳过含 NaN/Inf 的退化量体
+        pc = Poly3DCollection(faces, facecolor=_base.SH_COLOR[r["stakeholder"]],
+                              edgecolor="white", linewidths=0.1, alpha=0.92)
+        ax.add_collection3d(pc, autolim=False) if no_autolim else ax.add_collection3d(pc)
     xmax = max(p.bounds[2] for g in sub["geom"] for p in common._polys(g)) - ox
     ymax = max(p.bounds[3] for g in sub["geom"] for p in common._polys(g)) - oy
     hmax = float(sub[height_col].max())

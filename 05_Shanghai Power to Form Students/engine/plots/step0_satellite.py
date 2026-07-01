@@ -46,7 +46,9 @@ def satellite_figureground(df, utm=common.UTM, zoom=16, show=True):
     ext = _bbox_3857(df, utm)
     img, iext = ctx.bounds2img(ext[0], ext[2], ext[1], ext[3], source=ctx.providers.Esri.WorldImagery, zoom=zoom)
 
-    fig, axes = plt.subplots(1, 3, figsize=(20, 7))
+    A = (ext[3] - ext[2]) / (ext[1] - ext[0])            # 影像 高/宽 比 → figure 配到内容,消上下留白
+    pw = 6.4                                             # 单幅宽(英寸)
+    fig, axes = plt.subplots(1, 3, figsize=(3 * pw + 0.8, pw * A + 1.5))
     axes[0].imshow(img, extent=iext); axes[0].set_title("① 真实卫星(Esri)", fontsize=12)
     axes[1].set_facecolor("white"); _draw_footprints(axes[1], df, utm, alpha=1.0)
     axes[1].set_title("② figure-ground(footprint 依角色著色)", fontsize=12); _legend(axes[1])
@@ -54,8 +56,8 @@ def satellite_figureground(df, utm=common.UTM, zoom=16, show=True):
     axes[2].set_title("③ 叠图(真实 + 我们的离散读法)", fontsize=12); _legend(axes[2])
     for ax in axes:
         ax.set_xlim(ext[0], ext[1]); ax.set_ylim(ext[2], ext[3]); ax.set_aspect("equal"); ax.axis("off")
-    _base.footer(fig)
-    fig.tight_layout(); fig.subplots_adjust(bottom=0.12)
+    _base.footer(fig, y=-0.005)
+    fig.tight_layout(); fig.subplots_adjust(top=0.93, bottom=0.13)   # 下方留白≈上方
     _base.autosave(fig, "satellite_figureground")
     if show:
         plt.show()

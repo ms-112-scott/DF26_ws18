@@ -206,6 +206,37 @@ def level(recs, target, toward="median", alpha=0.6):
     return out
 
 
+def scale(recs, target, factor=2.0):
+    """放大/缩小:把目标楼的 footprint 依「几何中心」线性缩放 factor 倍(高度不变)。
+    factor=2 → 边长×2、footprint 面积×4(GFA 随面积×4,不守恒);<1 则缩小。"""
+    out = _copy(recs)
+    for r in out:
+        if _aff(r, target):
+            r["geom"] = aff.scale(r["geom"], xfact=factor, yfact=factor, origin="centroid")
+    return out
+
+
+def scale_graded(recs, target, center="global_centroid", factor=2.0, reach_frac=0.25, min_factor=1.0):
+    """渐变放大:目标楼 footprint 依「到建筑中心点的距离」渐变缩放(高度不变)。
+    近中心→接近 factor 倍;越远→衰减到 min_factor 倍。factor>1 放大、<1 缩小。
+    GFA 随面积变(不守恒)。center: state_centroid=以 state 质心为中心;其它=全体 GFA 质心。
+    reach_frac: 衰减尺度(占全域跨度的比例,越大范围越广)。"""
+    out = _copy(recs)
+    polys = [p for r in out for p in C._polys(r["geom"])]
+    minx = min(p.bounds[0] for p in polys); maxx = max(p.bounds[2] for p in polys)
+    miny = min(p.bounds[1] for p in polys); maxy = max(p.bounds[3] for p in polys)
+    span = max(maxx - minx, maxy - miny)
+    lam = max(reach_frac * span, 1e-6)
+    Px, Py = _center(out, center)
+    for r in out:
+        if _aff(r, target):
+            d = math.hypot(r["geom"].centroid.x - Px, r["geom"].centroid.y - Py)
+            g = math.exp(-d / lam)                        # 1(中心)→ 0(远)
+            f = min_factor + (factor - min_factor) * g    # 渐变缩放比
+            r["geom"] = aff.scale(r["geom"], xfact=f, yfact=f, origin="centroid")
+    return out
+
+
 def open_ground(recs, target, ratio=0.6, cap_m=200.0):
     """共享/开放:缩私有 footprint 释放共享地面,高度 /ratio 补偿(GFA 守恒,但不激进塔化),封顶。"""
     out = _copy(recs)
@@ -219,7 +250,8 @@ def open_ground(recs, target, ratio=0.6, cap_m=200.0):
 # OPS：算子名 → 函数。加自己的算子时,在这里登记一行(见 算子替换指南.md)。
 OPS = {"freeze": freeze, "weight_height": weight_height, "concentrate": concentrate,
        "split_to_towers": split_to_towers, "slim": slim, "densify": densify,
-       "infill": infill, "level": level, "open_ground": open_ground}
+       "infill": infill, "level": level, "open_ground": open_ground, "scale": scale,
+       "scale_graded": scale_graded}
 
 
 def register(name, fn):

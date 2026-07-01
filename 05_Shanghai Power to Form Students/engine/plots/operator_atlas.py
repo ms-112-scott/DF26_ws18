@@ -25,19 +25,24 @@ def _panel(ax, recs, color_for, title):
 
 def operator_demo(before, after, title="", color="sh", show=True):
     """单个算子的 before/after。color='sh' 按角色 / 'h' 按高度(同色阶)。"""
-    fig, (a0, a1) = plt.subplots(1, 2, figsize=(13, 6.4))
-    if color == "h":
+    has_cb = (color == "h")
+    asp = _base.data_aspect(before)                        # figure 配到内容:panel 填满、无上下留白
+    fig, (a0, a1), cax = _base.panel_grid(2, 1, asp, panel_w=5.0, wspace_in=0.22,
+                                          title_in=(0.82 if title else 0.42), cbar=has_cb)
+    if has_cb:
         norm = _hnorm(before, after)
         cf = lambda r: HCMAP(norm(r["h"]))
     else:
         cf = lambda r: _base.SH_COLOR[r["sh"]]
     _panel(a0, before, cf, "before  ·  n=%d  平均高 %.1fm" % (len(before), np.mean([r["h"] for r in before])))
     _panel(a1, after, cf, "after  ·  n=%d  平均高 %.1fm" % (len(after), np.mean([r["h"] for r in after])))
+    for ax in (a0, a1):
+        ax.margins(0.01)                                 # 四周数据留白 5%→1%
     if title:
-        fig.suptitle(title, fontsize=13, y=1.02)
-    if color == "h":
+        fig.suptitle(title, fontsize=13, y=0.99, va="top")
+    if has_cb:
         sm = ScalarMappable(norm=norm, cmap=HCMAP); sm.set_array([])
-        fig.colorbar(sm, ax=[a0, a1], fraction=0.018, pad=0.012).set_label("高度 (m)", fontsize=9)
+        fig.colorbar(sm, cax=cax).set_label("高度 (m)", fontsize=9)   # cax 高度 = subplots 同高
     _base.footer(fig)
     _base.autosave(fig, "operator_demo")
     if show:
@@ -45,20 +50,30 @@ def operator_demo(before, after, title="", color="sh", show=True):
     return fig
 
 
-def regime_compare(before, after_by_regime, names=None, labels=None, show=True):
-    """现状 + 各体制,按**新高度**同色阶著色,一眼看四种权力长出四种形态。"""
+def regime_compare(before, after_by_regime, names=None, labels=None,
+                   ncols=2, pad=0.1, hpad=0.32, show=True):
+    """现状 + 各体制,按**新高度**同色阶著色,一眼看权力长出的形态。
+    自动 grid:ncols 列 × ceil(n/ncols) 行(默认 2 列)。
+    pad=左右两 panel 空白(wspace),hpad=上下两 row 空白(hspace,需留双行标题)。"""
     names = names or list(after_by_regime.keys())
     seq = [("current", before)] + [(n, after_by_regime[n]) for n in names]
     norm = _hnorm(*[r for _, r in seq])
     cf = lambda r: HCMAP(norm(r["h"]))
-    fig, axes = plt.subplots(1, len(seq), figsize=(4.8 * len(seq), 5.8))
-    if len(seq) == 1:
-        axes = [axes]
+    n = len(seq)
+    ncols = max(1, min(ncols, n))
+    nrows = int(np.ceil(n / ncols))
+    asp = _base.data_aspect(before)                # figure 配到内容:每 panel 填满、无上下留白
+    fig, axes, cax = _base.panel_grid(ncols, nrows, asp, panel_w=4.8,
+                                      title_in=0.5, hspace_in=0.72, cbar=True)
     for ax, (name, recs) in zip(axes, seq):
         lab = (labels or {}).get(name, name)
         _panel(ax, recs, cf, "%s\nn=%d · 平均高 %.1fm" % (lab, len(recs), np.mean([r["h"] for r in recs])))
+        ax.margins(0.01)                          # 每 panel 数据留白 5%→1%
+    for ax in axes[n:]:                            # 多余格子(n 为奇数时最后一格)隐藏
+        ax.set_visible(False)
     sm = ScalarMappable(norm=norm, cmap=HCMAP); sm.set_array([])
-    fig.colorbar(sm, ax=axes, fraction=0.014, pad=0.01).set_label("建物高度 (m) — 同色阶可横比", fontsize=10)
+    fig.colorbar(sm, cax=cax).set_label(           # cax 高度 = 整片 subplots(跨全部 row)同高
+        "建物高度 (m) — 同色阶可横比", fontsize=10)
     _base.footer(fig)
     _base.autosave(fig, "regime_compare")
     if show:

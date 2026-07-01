@@ -32,10 +32,10 @@ def power_map(df, show=True):
     ax_bar.set_yticks(y)
     ax_bar.set_yticklabels([_base.SH_LABEL[sh] for sh in order], fontsize=8)
     ax_bar.invert_yaxis(); ax_bar.set_xlabel("占比 share")
-    ax_bar.legend(loc="upper center", bbox_to_anchor=(0.5, -0.06), ncol=2, fontsize=8, frameon=False)
+    ax_bar.legend(loc="upper center", bbox_to_anchor=(0.5, -0.09), ncol=2, fontsize=8, frameon=False)
 
-    _base.footer(fig)
-    fig.tight_layout(); fig.subplots_adjust(bottom=0.16)
+    _base.footer(fig, y=-0.005)
+    fig.tight_layout(); fig.subplots_adjust(top=0.95, bottom=0.15)   # 下方装图例(非空白),footer 贴近
     _base.autosave(fig, "power_map")
     if show:
         plt.show()

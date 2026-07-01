@@ -3,30 +3,31 @@
 ## 一句话
 上海真实多源数据 → 贴角色 →（主册）只调高度 /（进阶）算子配方 → 看天际线 / 形态指纹。
 
-## 5 本 notebook(按顺序)
-1. `01_数据-怎么选与拼接` —— 怎么选数据、多源怎么拼、从数据集建缓存。
-2. `02_映射-谁算谁的` —— 离散级联查表:一栋=一个权利方。
-3. `03_城市天际线-动手做` —— **主册**:只调高度,看天际线。
-4. `04_进阶-权力算子` —— **进阶**:9 算子 × 4 体制 → 形态指纹。
-5. `05_换地方-按街道取` —— **换地方**:按街道取(随包 9 街道切 / 按街道名现建)。
+## 1 本 notebook:`05_完整流程`(Run All)
+一次跑遍整条流程,分阶段:
+1. **A 数据 → 映射** —— 选/拼多源数据、离散级联查表(一栋=一个权利方)。
+2. **B 只调高度** —— 锁死 footprint,4 情景横比天际线。
+3. **C 权力算子** —— 9 算子 × 4 体制 → 形态指纹。
+4. **D 3D / OBJ** —— 挤量体 + 导出 OBJ。
+5. **F 互动 html** —— 交给 `06_AI Render Students` 出 `canvas.html`。
+
+产物集中到 `out/<slug>/Step_05/<时间戳>/`;`RUN_ALL_SITES=1` 跑遍所有缓存街道。
 
 ## 能改的文件(就在这个文件夹,不用进 engine)
 - `config.py` —— 换站点 `SLUG`(lujiazui / caoyang / yuyuan);进阶填 `DATASET_ROOT`。
-- `shanghai_lookup.yaml` —— 谁算谁的。改完重跑 Step 2。
-- `power_scenarios.yaml` —— 高度政策。改完重跑 Step 3、4。
-- `regimes.yaml` —— 算子配方(进阶)。
+- `shanghai_lookup.yaml` —— 谁算谁的。改完重跑阶段 A。
+- `power_scenarios.yaml` —— 高度政策。改完重跑阶段 B。
+- `regimes.yaml` —— 算子配方。改完重跑阶段 C。
 - 加算子:`算子替换指南.md` + `engine/my_operator.py`。
 
-## 每本 notebook 用到的 config / yaml
-（主场 = 该文件的主要练习 notebook）
-- **01_数据** —— `config.SLUG` + `config.DATASET_ROOT`(判断有没有数据集);建缓存时才用 `config.SITES` / `site_name()`,写 `data/<slug>/site.yaml`,读 `shanghai_lookup.yaml`。
-- **02_映射**(`shanghai_lookup.yaml` 主场) —— `config.SLUG` 读楼;全程围绕 `shanghai_lookup.yaml`:读规则 / 反事实内存改判 / `assign_all` 套用。
-- **03_天际线**(`power_scenarios.yaml` 主场) —— `config.SLUG`;`shanghai_lookup.yaml` 贴角色;`power_scenarios.yaml` 定情景,`scenario_heights` 只调高度。
-- **04_进阶**(`regimes.yaml` 主场) —— `config.SLUG`;`shanghai_lookup.yaml` 贴角色;`regimes.yaml` 配方(9 算子 × 4 体制);间接读 `data/<slug>/site.yaml`(算容积率/覆盖率要街道面积)。
-- **05_换地方**(`config.py` 主场) —— 直接改写 `config.SLUG`;`config.SITES` 列街道目录;`config.DATASET_ROOT` + `site_name()` 现建缓存并写 `site.yaml`;`shanghai_lookup.yaml` 贴角色。
+## 各阶段用到的 config / yaml
+- **阶段 A 数据 → 映射** —— `config.SLUG` + `config.DATASET_ROOT`(判断有没有数据集);建缓存时用 `config.SITES` / `site_name()`,写 `data/<slug>/site.yaml`;`shanghai_lookup.yaml` 定「谁算谁的」(读规则 / 反事实内存改判 / `assign_all` 套用)。
+- **阶段 B 只调高度**(`power_scenarios.yaml` 主场) —— `power_scenarios.yaml` 定情景,`scenario_heights` 只调高度。
+- **阶段 C 权力算子**(`regimes.yaml` 主场) —— `regimes.yaml` 配方(9 算子 × 4 体制);间接读 `data/<slug>/site.yaml`(算容积率/覆盖率要街道面积)。
+- **阶段 D / F** —— 挤 OBJ 到 `out/<slug>/`;把体块交给 `06` 出 `canvas.html`。
 
-对应:`config.py`→05 · `shanghai_lookup.yaml`→02 · `power_scenarios.yaml`→03 · `regimes.yaml`→04。
-每本开头 `import config` 只为清模块缓存 + 取 `SLUG`,不改区块。`config.REPORT_SITES` 只有 `engine/build_report.py` 用,notebook 都不碰。
+对应:`config.py`→A · `shanghai_lookup.yaml`→A · `power_scenarios.yaml`→B · `regimes.yaml`→C。
+开头 `import config` 只为清模块缓存 + 取 `SLUG`,不改区块。
 
 ## 依赖关系(先改 → 后跑)
 - 图例:粗线=数据来源 · 细线=执行顺序 · 虚线=改文件后要重跑那本。
@@ -40,17 +41,18 @@ flowchart TD
         RG["regimes.yaml — 算子配方"]
     end
 
-    CFG ==>|定站点、取数据| N1["01 数据"]
-    N1 --> N2["02 映射"]
-    N2 --> N3["03 天际线(主册)"]
-    N3 --> N4["04 进阶算子"]
+    subgraph NB["05_完整流程.ipynb(Run All)"]
+        A["阶段 A 数据→映射"] --> B["阶段 B 只调高度"]
+        B --> C["阶段 C 权力算子"]
+        C --> D["阶段 D 3D/OBJ"]
+        D --> F["阶段 F 出 06 canvas.html"]
+    end
 
-    LK -.改完重跑.-> N2
-    PS -.改完重跑.-> N3
-    RG -.改完重跑.-> N4
-
-    N4 --> N5["05 换地方 — 改 config.SLUG"]
-    N5 -.换站点、回到 01 重跑.-> CFG
+    CFG ==>|定站点、取数据| A
+    LK -.改完重跑.-> A
+    PS -.改完重跑.-> B
+    RG -.改完重跑.-> C
+    F -.换站点重跑.-> CFG
 ```
 
 - 数据流(每本内部同一条链):`config.SLUG` → `data/<slug>/buildings.parquet` → `assign_all`(读 `shanghai_lookup.yaml`)→ `scenario_heights`(读 `power_scenarios.yaml`)/ `apply_regime`(读 `regimes.yaml`)。
@@ -80,7 +82,8 @@ flowchart TD
 - 建筑占地 footprint（主册）· 角色标签 · 方向单向:由权力推导形态。
 
 ## 产物在哪
-- `out/<slug>/`:图 PNG、3D OBJ、CSV、`report.html`(繁体自含单档)。
+- `out/<slug>/Step_05/<时间戳>/`:图 PNG、3D OBJ。
+- `06_AI Render Students/out/<slug>/canvas.html`:互动 3D(浏览器直接开)。
 - `data/<slug>/`:缓存(随包 3 站;自己建的也存这)。
 
 ## 边界

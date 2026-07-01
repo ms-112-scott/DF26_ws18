@@ -26,8 +26,8 @@ def data_overview(df, show=True):
     axR.set_title("实测高度分布(全为 AI 解译实测,非楼层估算)", fontsize=12)
     axR.legend(loc="upper right", fontsize=9, frameon=False)
 
-    _base.footer(fig)
-    fig.tight_layout(); fig.subplots_adjust(bottom=0.18)
+    _base.footer(fig, y=-0.005)
+    fig.tight_layout(); fig.subplots_adjust(top=0.92, bottom=0.10)   # 下方留白≈上方
     _base.autosave(fig, "data_overview")
     if show:
         plt.show()

@@ -13,16 +13,19 @@ def skyline_panels(df, heights, names=None, show=True):
     names = names or list(heights.keys())
     norm = _base.height_norm(*[heights[n] for n in names])
 
-    fig, axes = plt.subplots(1, len(names), figsize=(5.5 * len(names), 6.2))
-    if len(names) == 1:
-        axes = [axes]
+    a = _base.data_aspect(df)                           # figure 配到内容:消掉等比留白
+    ncols = 2 if len(names) > 1 else 1                   # 2×2 排列(4 情景)
+    nrows = int(np.ceil(len(names) / ncols))
+    fig, axes, cax = _base.panel_grid(ncols, nrows, a, cbar=True, hspace_in=0.66)
     for ax, name in zip(axes, names):
         h = heights[name]
         hmap = dict(zip(df.index, h.values))
-        _base.plot_footprints(ax, df, color_for=lambda r: _base.HEIGHT_CMAP(norm(hmap[r.name])))
+        _base.plot_footprints(ax, df, color_for=lambda r, _m=hmap: _base.HEIGHT_CMAP(norm(_m[r.name])))
         ax.set_title("%s\n平均高 %.1f m · 最高 %.0f m" % (name, h.mean(), h.max()), fontsize=11)
+    for ax in axes[len(names):]:                         # 多余格子隐藏(情景数非偶数时)
+        ax.set_visible(False)
     sm = ScalarMappable(norm=norm, cmap=_base.HEIGHT_CMAP); sm.set_array([])
-    fig.colorbar(sm, ax=axes, fraction=0.018, pad=0.012).set_label(
+    fig.colorbar(sm, cax=cax).set_label(                # cax 高度 = subplots 全高
         "建物高度 (m) — 同一色阶,可横向比对", fontsize=10)
     _base.footer(fig)
     _base.autosave(fig, "skyline_panels")

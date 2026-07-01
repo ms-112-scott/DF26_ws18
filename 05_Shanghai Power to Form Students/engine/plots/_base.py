@@ -22,7 +22,7 @@ common._set_cjk_font()
 
 # ---- 自动存图(view 层唯一存图出口):每个 plots.* 都把图落盘,学生不用逐张存 --------------
 # 一次 run 开一个 timestamp 夹;所有图归在 out/<slug>/Step_<num>/<timestamp>/NN_name.png。
-# 预设关闭 → build_report(走自己的 save_fig)不受影响;notebook 在 setup 呼叫 capture() 才开。
+# 预设关闭 → 单跑脚本(走自己的 save_fig)不受影响;notebook 在 setup 呼叫 capture() 才开。
 _CAPTURE = {"on": False, "num": None, "slug": None, "stamp": None, "seq": 0}
 
 
@@ -45,13 +45,8 @@ def autosave(fig, name):
     d.mkdir(parents=True, exist_ok=True)
     _CAPTURE["seq"] += 1
     p = d / ("%02d_%s.png" % (_CAPTURE["seq"], name))
-    fig.savefig(p, dpi=120, bbox_inches="tight")
+    fig.savefig(p, dpi=120, bbox_inches="tight", pad_inches=0.083)   # 四周固定 ~10px padding
     print("  -> saved", p.relative_to(common.ROOT))
-    try:                                  # 顺手更新 out/manifest.json,让 web/index.html 读到最新
-        import manifest
-        manifest.bump(slug, _CAPTURE["num"], _CAPTURE["stamp"])
-    except Exception as e:
-        print("  manifest skip:", e)
     return p
 
 # ---- 角色调色盘(view):从 common 取(单一真相源,简体)-----------------------
@@ -77,15 +72,52 @@ def height_norm(*height_series):
     return Normalize(vmin=float(allh.min()), vmax=float(allh.max()))
 
 
-def footer(fig, note=None):
-    """图底放诚实说明。"""
-    fig.text(0.5, -0.04, note or common.honest_note(), ha="center", fontsize=7, color="#666")
+def data_aspect(df_or_recs):
+    """footprint 整体的 高/宽 比(dh/dw)。用来把 figure 尺寸配到内容,消掉等比留白。"""
+    rows = (r for _, r in df_or_recs.iterrows()) if hasattr(df_or_recs, "iterrows") else iter(df_or_recs)
+    x0 = y0 = float("inf"); x1 = y1 = float("-inf")
+    for r in rows:
+        for p in common._polys(r["geom"]):
+            bx0, by0, bx1, by1 = p.bounds
+            x0 = min(x0, bx0); y0 = min(y0, by0); x1 = max(x1, bx1); y1 = max(y1, by1)
+    dw, dh = x1 - x0, y1 - y0
+    return (dh / dw) if dw > 0 else 1.0
+
+
+def panel_grid(ncols, nrows, aspect, *, panel_w=4.6, title_in=0.55, footer_in=0.36,
+               left_in=0.16, right_in=0.16, top_in=0.14, wspace_in=0.28, hspace_in=0.62,
+               cbar=False, cbar_w_in=0.16, cbar_gap_in=0.20, cbar_label_in=0.62):
+    """等比 footprint 面板专用:figure 尺寸从 data aspect 反推,让每个 panel 刚好填满格子
+    (不再等比缩水置中 → 消掉上/下留白);colorbar 高度 = 整个 axes 区高度 = 与 subplots 同高。
+    回传 (fig, axes(list, 长度 ncols*nrows), cax 或 None)。单位都是英寸,再换算成 figure 分数。"""
+    ph = panel_w * aspect                                    # 单一 panel 内容高(英寸)
+    axes_w = ncols * panel_w + (ncols - 1) * wspace_in
+    axes_h = nrows * ph + (nrows - 1) * hspace_in
+    cbar_block = (cbar_gap_in + cbar_w_in + cbar_label_in) if cbar else 0.0
+    fig_w = left_in + axes_w + right_in + cbar_block
+    fig_h = top_in + title_in + axes_h + footer_in
+    fig = plt.figure(figsize=(fig_w, fig_h))
+    L = left_in / fig_w; R = (left_in + axes_w) / fig_w
+    B = footer_in / fig_h; T = (footer_in + axes_h) / fig_h
+    gs = fig.add_gridspec(nrows, ncols, left=L, right=R, bottom=B, top=T,
+                          wspace=wspace_in / panel_w, hspace=hspace_in / ph)
+    axes = [fig.add_subplot(gs[i // ncols, i % ncols]) for i in range(nrows * ncols)]
+    cax = None
+    if cbar:
+        cx = (left_in + axes_w + cbar_gap_in) / fig_w
+        cax = fig.add_axes([cx, B, cbar_w_in / fig_w, T - B])   # 高度 = T-B = axes 区全高
+    return fig, axes, cax
+
+
+def footer(fig, note=None, y=-0.02):
+    """已停用:所有图都不显示最下一行灰色小字(诚实说明)。保留签名让呼叫端不用改。"""
+    return
 
 
 def save_fig(fig, name, dpi=120):
     """存图到 out/ 并关闭(headless steps 用)。"""
     p = common.OUT / name
-    fig.savefig(p, dpi=dpi, bbox_inches="tight"); plt.close(fig)
+    fig.savefig(p, dpi=dpi, bbox_inches="tight", pad_inches=0.083); plt.close(fig)
     print("  -> wrote", p.relative_to(common.ROOT)); return p
 
 

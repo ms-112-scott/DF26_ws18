@@ -459,18 +459,6 @@ def counterfactual(df, frm="developer", to="state", lookup=None):
             "after": assign_all(df, lk).stakeholder.value_counts().to_dict()}
 
 
-# --------------------------------------------------------- 换地方:列出数据集里所有街道名(05 选街道用)
-def subdistrict_names(contains=None):
-    """数据集里所有乡镇街道名(排序去重)。需 config.DATASET_ROOT 已设;没有则回传 []。
-    contains 不为空时只留含该子串的(如 '新村')。读 shp 的细节藏在这里,05 notebook 看一行。"""
-    P = dataset_paths()
-    if not P["JD"].exists():
-        return []
-    jd = gpd.read_file(P["JD"])
-    names = sorted(n for n in jd["name"].dropna().unique())
-    return [n for n in names if contains in n] if contains else names
-
-
 # --------------------------------------------------------- 挤 OBJ 并落盘(03 step5 的「写档」那半步)
 def export_obj(df, slug=None, name="city_current.obj", height_col="height_m"):
     """真实 footprint 按 height_col 挤成量体 OBJ,写到 out/<slug>/<name>。回传 (path, n_verts, n_faces)。

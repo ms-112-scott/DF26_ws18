@@ -6,7 +6,7 @@
 #    不填 DATASET_ROOT 也完全没问题:随包已带 3 站缓存,离线即可跑全部主流程。详见 数据集说明.md。
 from pathlib import Path
 
-SLUG = "lujiazui"  # 当前站点:改成 SITES 里任一 slug。换地方的完整玩法见「05_换地方-按街道取」notebook。
+SLUG = "lujiazui"  # 当前站点:改成 SITES 里任一 slug。换街道见 数据集说明.md「换成别的街道」。
 
 DATASET_ROOT = "C:/baidunetdiskdownload/data_collection/上海城市数据集"  # (可选)你解压的「上海城市数据集」根目录(字符串路径),例:
 #     DATASET_ROOT = "/Users/you/Downloads/上海城市数据集"
@@ -14,7 +14,7 @@ DATASET_ROOT = "C:/baidunetdiskdownload/data_collection/上海城市数据集"  
 
 # 全市 229 个乡镇街道层单元(name=边界 shp 精确名、已校验)。改 SLUG 切换;研究单位=街道多边形,非方框。
 # 三段:A 代表站 / B 已校验扩充站(均 ascii slug)/ C 其余全市(slug=中文名、可直接当 SLUG)。
-# 仅 lujiazui/caoyang/yuyuan 随包带缓存;其余需 DATASET_ROOT 现建(已设)。详见「05_换地方」notebook。
+# 仅 lujiazui/caoyang/yuyuan 随包带缓存;其余需 DATASET_ROOT 现建(已设)。详见 数据集说明.md。
 SITES = [
     # ===== A. 代表站(ascii slug、含丰富 family;主册/报告默认)=====
     {"slug": "lujiazui", "name": "陆家嘴街道", "family": "资本/超高层"},
@@ -250,7 +250,7 @@ SITES = [
     {"slug": "祝桥镇", "name": "祝桥镇", "family": "镇"},
 ]
 
-# engine/build_report.py 默认出这 3 站的报告(其余街道可单独 `python3 engine/build_report.py <slug>`)。
+# 默认示范的 3 站(其余街道改 SLUG 即可离线切;06 的 build_canvas 也默认跑这 3 站)。
 REPORT_SITES = ["lujiazui", "caoyang", "yuyuan"]
 
 # ===== 以下自动推导,通常不用改 =====
@@ -275,6 +275,6 @@ def site_name(slug=None):
         )["name"]
     except Exception:
         raise ValueError(
-            "未知 slug:%s(不在 SITES,也没有 data/%s/ 缓存)。见「05_换地方」notebook。"
+            "未知 slug:%s(不在 SITES,也没有 data/%s/ 缓存)。见 数据集说明.md「换成别的街道」。"
             % (slug, slug)
         )
