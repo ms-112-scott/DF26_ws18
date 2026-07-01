@@ -1,0 +1,14 @@
+# 07 AI Render 依赖。装法:pip install -r engine/requirements.txt
+# 07 依赖 05(数据/引擎),所以也要先装好 05 的 engine/requirements.txt(geopandas/shapely/pyarrow 等)。
+
+# 体块参考图 + 提示词生成(离线可跑,无需 token):
+numpy
+matplotlib
+pyyaml
+imageio          # 合成过渡动画 gif
+pillow           # crossfade 溶解
+
+# 真渲染 / 真补间(需联网 + REPLICATE_API_TOKEN):
+replicate        # 调 Replicate 的「图+文→图」模型(nano-banana / flux-kontext)
+
+# 注:dry-run 模式不需要 replicate / token,先离线看提示词与参考图都没问题。

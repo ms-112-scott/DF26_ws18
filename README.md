@@ -456,7 +456,7 @@ Windows 安装时务必勾选 **Add Python to PATH**。
 
 ```bash
 # 创建 .venv
-python -m venv .venv        # macOS / Linux 用 python3
+python3.14 -m venv .venv        # macOS / Linux 用 python3
 ```
 
 ```powershell
