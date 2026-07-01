@@ -28,6 +28,34 @@
 对应:`config.py`→05 · `shanghai_lookup.yaml`→02 · `power_scenarios.yaml`→03 · `regimes.yaml`→04。
 每本开头 `import config` 只为清模块缓存 + 取 `SLUG`,不改区块。`config.REPORT_SITES` 只有 `engine/build_report.py` 用,notebook 都不碰。
 
+## 依赖关系(先改 → 后跑)
+- 图例:粗线=数据来源 · 细线=执行顺序 · 虚线=改文件后要重跑那本。
+
+```mermaid
+flowchart TD
+    subgraph EDIT["先改:可编辑文件(记事本即可)"]
+        CFG["config.py — SLUG / DATASET_ROOT"]
+        LK["shanghai_lookup.yaml — 谁算谁的"]
+        PS["power_scenarios.yaml — 高度政策"]
+        RG["regimes.yaml — 算子配方"]
+    end
+
+    CFG ==>|定站点、取数据| N1["01 数据"]
+    N1 --> N2["02 映射"]
+    N2 --> N3["03 天际线(主册)"]
+    N3 --> N4["04 进阶算子"]
+
+    LK -.改完重跑.-> N2
+    PS -.改完重跑.-> N3
+    RG -.改完重跑.-> N4
+
+    N4 --> N5["05 换地方 — 改 config.SLUG"]
+    N5 -.换站点、回到 01 重跑.-> CFG
+```
+
+- 数据流(每本内部同一条链):`config.SLUG` → `data/<slug>/buildings.parquet` → `assign_all`(读 `shanghai_lookup.yaml`)→ `scenario_heights`(读 `power_scenarios.yaml`)/ `apply_regime`(读 `regimes.yaml`)。
+- 先后铁律:先定 `config.SLUG`(01 建/取数据),才有楼可贴角色(02);先贴角色,才能只调高度(03)与套算子配方(04)。
+
 ## power_scenarios.yaml 三个值
 - `mult`:高度权重。>1 长高,<1 压低。
 - `cap_m`:高度上限(米)。
